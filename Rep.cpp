@@ -15,27 +15,31 @@ void displayMatrix(int v)
         cout << endl;
     }
 }
-void bfs(int v1,int n)
+int visit[2] = {0};
+// Mark the node if visited
+void bfs(int s,int n)
 {
-    // visit[v1] = 1;
-    queue<int> Q;
-    // front = rear = -1;
-    Q.push(v1) ;
-    while (!Q.empty())
+    queue<int> q;
+    cout << s << " ";
+    q.push(s);
+
+    visit[s] = 1;
+    while (!q.empty())
     {
-        v1 = Q.front();
-        cout << v1 << endl;
-        for (int v2 = 0; v2 < n; v2++)
+        int x = q.front();
+        q.pop();
+        for (int j = 0; j < n; j++)
         {
-            if (vertArr[v1][v2] == 1 && visit[v2] == 0)
+            if (vertArr[x][j] == 1 && visit[j] == 0)
             {
-                Q.push(v2) ;
-                visit[v2] = 1;
+                cout << j << " ";
+                q.push(j);
+                visit[j] = 1;
             }
         }
     }
 }
-int visit[2] = {0};
+
 void dfs(int v1, int n)
 {
     cout << v1 << endl;
@@ -61,7 +65,9 @@ int main()
     add_edge(2, 1);
     add_edge(1, 2);
     displayMatrix(v);
+    cout << "DFS Traversal" << endl;
     dfs(1, v);
-    // bfs(1,v);
+    cout << "BFS Traversal" << endl;
+    bfs(1, v);
     return 0;
 }
