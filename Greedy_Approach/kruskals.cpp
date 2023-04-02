@@ -3,6 +3,10 @@
 
 void findMinimumEdge(int INFINITY, std::array<std::array<int, 6>, 6> graph)
 {
+    std::cout << "Edge"
+              << "\t "
+              << "    Weight"
+              << std::endl;
     for (int i = 0; i < graph.size(); i++)
     {
         int min = INFINITY;
@@ -15,7 +19,7 @@ void findMinimumEdge(int INFINITY, std::array<std::array<int, 6>, 6> graph)
                 minIndex = j;
             }
         }
-        std::cout << i << "  -  " << minIndex << "\t" << graph[i][minIndex]
+        std::cout << i << "  -  " << minIndex << "\t\t" << graph[i][minIndex]
                   << std::endl;
     }
 }
