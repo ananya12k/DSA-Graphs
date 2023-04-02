@@ -124,7 +124,6 @@ int main()
         cin >> dst;
         cout << "Enter weight: ";
         cin >> weight;
-
         // makes sure source and destionation are in the proper bounds.
         if (src >= 0 && src < V && dst >= 0 && dst < V)
         {
