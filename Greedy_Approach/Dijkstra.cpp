@@ -1,144 +1,105 @@
-#include <limits.h>
+// C++ program for Dijkstra's single source shortest path
+// algorithm. The program is for adjacency matrix
+// representation of the graph
 #include <iostream>
-
 using namespace std;
+#include <limits.h>
 
-// Wrapper class for storing a graph
-class Graph
+// Number of vertices in the graph
+#define V 9
+
+// A utility function to find the vertex with minimum
+// distance value, from the set of vertices not yet included
+// in shortest path tree
+int minDistance(int dist[], bool sptSet[])
 {
-public:
-    int vertexNum;
-    int **edges;
 
-    // Constructs a graph with V vertices and E edges
-    Graph(const int V)
-    {
-        // initializes the array edges.
-        this->edges = new int *[V];
-        for (int i = 0; i < V; i++)
-        {
-            edges[i] = new int[V];
-        }
+	// Initialize min value
+	int min = INT_MAX, min_index;
 
-        // fills the array with zeros.
-        for (int i = 0; i < V; i++)
-        {
-            for (int j = 0; j < V; j++)
-            {
-                edges[i][j] = 0;
-            }
-        }
+	for (int v = 0; v < V; v++)
+		if (sptSet[v] == false && dist[v] <= min)
+			min = dist[v], min_index = v;
 
-        this->vertexNum = V;
-    }
-
-    // Adds the given edge to the graph
-    void addEdge(int src, int dst, int weight)
-    {
-        this->edges[src][dst] = weight;
-    }
-};
-// Utility function to find minimum distance vertex in mdist
-int minDistance(int mdist[], bool vset[], int V)
-{
-    int minVal = INT_MAX, minInd = 0;
-    for (int i = 0; i < V; i++)
-    {
-        if (!vset[i] && (mdist[i] < minVal))
-        {
-            minVal = mdist[i];
-            minInd = i;
-        }
-    }
-
-    return minInd;
+	return min_index;
 }
 
-// Utility function to print distances
-void print(int dist[], int V)
+// A utility function to print the constructed distance
+// array
+void printSolution(int dist[])
 {
-    cout << "\nVertex  Distance" << endl;
-    for (int i = 0; i < V; i++)
-    {
-        if (dist[i] < INT_MAX)
-            cout << i << "\t" << dist[i] << endl;
-        else
-            cout << i << "\tINF" << endl;
-    }
+	cout << "Vertex \t Distance from Source" << endl;
+	for (int i = 0; i < V; i++)
+		cout << i << " \t\t\t\t" << dist[i] << endl;
 }
 
-// The main function that finds the shortest path from given source
-// to all other vertices using Dijkstra's Algorithm.It doesn't work on negative
-// weights
-void Dijkstra(Graph graph, int src)
+// Function that implements Dijkstra's single source
+// shortest path algorithm for a graph represented using
+// adjacency matrix representation
+void dijkstra(int graph[V][V], int src)
 {
-    int V = graph.vertexNum;
-    int mdist[V]; // Stores updated distances to vertex
-    bool vset[V]; // vset[i] is true if the vertex i included
-    // in the shortest path tree
+	int dist[V]; // The output array. dist[i] will hold the
+				// shortest
+	// distance from src to i
 
-    // Initialise mdist and vset. Set distance of source as zero
-    for (int i = 0; i < V; i++)
-    {
-        mdist[i] = INT_MAX;
-        vset[i] = false;
-    }
+	bool sptSet[V]; // sptSet[i] will be true if vertex i is
+					// included in shortest
+	// path tree or shortest distance from src to i is
+	// finalized
 
-    mdist[src] = 0;
+	// Initialize all distances as INFINITE and stpSet[] as
+	// false
+	for (int i = 0; i < V; i++)
+		dist[i] = INT_MAX, sptSet[i] = false;
 
-    // iterate to find shortest path
-    for (int count = 0; count < V - 1; count++)
-    {
-        int u = minDistance(mdist, vset, V);
+	// Distance of source vertex from itself is always 0
+	dist[src] = 0;
 
-        vset[u] = true;
+	// Find shortest path for all vertices
+	for (int count = 0; count < V - 1; count++) {
+		// Pick the minimum distance vertex from the set of
+		// vertices not yet processed. u is always equal to
+		// src in the first iteration.
+		int u = minDistance(dist, sptSet);
 
-        for (int v = 0; v < V; v++)
-        {
-            if (!vset[v] && graph.edges[u][v] &&
-                mdist[u] + graph.edges[u][v] < mdist[v])
-            {
-                mdist[v] = mdist[u] + graph.edges[u][v];
-            }
-        }
-    }
+		// Mark the picked vertex as processed
+		sptSet[u] = true;
 
-    print(mdist, V);
+		// Update dist value of the adjacent vertices of the
+		// picked vertex.
+		for (int v = 0; v < V; v++)
+
+			// Update dist[v] only if is not in sptSet,
+			// there is an edge from u to v, and total
+			// weight of path from src to v through u is
+			// smaller than current value of dist[v]
+			if (!sptSet[v] && graph[u][v]
+				&& dist[u] != INT_MAX
+				&& dist[u] + graph[u][v] < dist[v])
+				dist[v] = dist[u] + graph[u][v];
+	}
+
+	// print the constructed distance array
+	printSolution(dist);
 }
 
-// Driver Function
+// driver's code
 int main()
 {
-    int V, E, gsrc;
-    int src, dst, weight;
-    cout << "Enter number of vertices: ";
-    cin >> V;
-    cout << "Enter number of edges: ";
-    cin >> E;
-    Graph G(V);
-    for (int i = 0; i < E; i++)
-    {
-        cout << "\nEdge " << i + 1 << "\nEnter source: ";
-        cin >> src;
-        cout << "Enter destination: ";
-        cin >> dst;
-        cout << "Enter weight: ";
-        cin >> weight;
-        // makes sure source and destionation are in the proper bounds.
-        if (src >= 0 && src < V && dst >= 0 && dst < V)
-        {
-            G.addEdge(src, dst, weight);
-        }
-        else
-        {
-            cout << "source and/or destination out of bounds" << endl;
-            i--;
-            continue;
-        }
-    }
-    cout << "\nEnter source:";
-    cin >> gsrc;
-    Dijkstra(G, gsrc);
 
-    return 0;
+	/* Let us create the example graph discussed above */
+	int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+						{ 4, 0, 8, 0, 0, 0, 0, 11, 0 },
+						{ 0, 8, 0, 7, 0, 4, 0, 0, 2 },
+						{ 0, 0, 7, 0, 9, 14, 0, 0, 0 },
+						{ 0, 0, 0, 9, 0, 10, 0, 0, 0 },
+						{ 0, 0, 4, 14, 10, 0, 2, 0, 0 },
+						{ 0, 0, 0, 0, 0, 2, 0, 1, 6 },
+						{ 8, 11, 0, 0, 0, 0, 1, 0, 7 },
+						{ 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
+
+	// Function call
+	dijkstra(graph, 0);
+
+	return 0;
 }
